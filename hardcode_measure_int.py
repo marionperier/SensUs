@@ -110,9 +110,9 @@ def average_intensity(im, coords):
 # cxs, cys, radii = [255, 560, 565], [155, 130, 450], [60,60,60]
 # bxs, bys, bradii = [420,100, 700], [300,300,150], [80,70,70]
 
-in_dir = 'D:/Utilisateurs/Emile/Documents/MA2/SensUs/data/20190418_Ada_Serum10times_300ngml/'
-cxs, cys, radii = [143, 150, 450, 747, 753], [188, 507, 480, 173,489], [48,48,48,48,48]
-bxs, bys, bradii = [420,100, 700], [320,320,320], [80,70,70]
+# in_dir = 'D:/Utilisateurs/Emile/Documents/MA2/SensUs/data/20190418_Ada_Serum10times_300ngml/'
+# cxs, cys, radii = [143, 150, 450, 747, 753], [188, 507, 480, 173,489], [48,48,48,48,48]
+# bxs, bys, bradii = [420,100, 700], [320,320,320], [80,70,70]
 
 # in_dir = 'D:/Utilisateurs/Emile/Documents/MA2/SensUs/data/20190516_Serum_300ngml_ada_10ul_NP/'
 # cxs, cys, radii = [143, 150, 450, 747, 753], [188, 507, 480, 173,489], [48,48,48,48,48]

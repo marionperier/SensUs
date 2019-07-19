@@ -12,7 +12,6 @@ from skimage.filters import gaussian, threshold_otsu
 from skimage.measure import label, regionprops
 from skimage.morphology import closing, opening, disk, dilation
 
-from utilities import get_disk_coord
 
 def count_particles(im, cxs, cys, radii):
     '''

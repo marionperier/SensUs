@@ -9,16 +9,16 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage import color
-from skimage.draw import circle_perimeter
+from skimage.draw import circle_perimeter, circle
 from skimage.filters import gaussian, threshold_minimum, threshold_otsu
 from skimage.segmentation import find_boundaries, clear_border, mark_boundaries
 from skimage.morphology import closing, opening, disk, dilation
 from skimage.feature import canny
 from skimage.transform import rescale, hough_circle, hough_circle_peaks
 
-from utilities import smooth_background, find_circle, get_disk_coord
+from utilities import smooth_background, find_circle
 
-#intensity measurement  
+#intensity measurement
 #get average intensity for the circles selected and for the background as in image 2 in figure
 
 
@@ -85,7 +85,7 @@ def get_intensities(in_dir, scale=0.2, smoothing=True):
     last_frame_file = 'Frame_'+str(frame_numbers[-1])+'.npy'
     last_frame = np.load(in_dir+last_frame_file)
     #downscale image by 5, might be removed/changed later
-    last_frame = rescale(last_frame, scale)
+    last_frame = rescale(last_frame, scale, anti_aliasing=True)
     
     background = get_background_coord(last_frame)
     
@@ -106,10 +106,12 @@ def get_intensities(in_dir, scale=0.2, smoothing=True):
     del display
 
     # get coordinates of points in spots
+    disks=[]
     for cy, cx, radius in zip(cys, cxs, radii):
-        disk = np.concatenate(circle(cy, cx, radius, shape = last_frame.shape)
+        disks.append(circle(cy, cx, radius, shape = last_frame.shape))
+    #TODO research how to free up memory. del may not be satisfactory. Maybe a "with" statement
+    disks = np.concatenate(disks, axis =1)
 
-#TODO research how to free up memory. del may not be satisfactory. Maybe a "with" statement.
     del last_frame
 
     intensity_back = []
@@ -122,8 +124,8 @@ def get_intensities(in_dir, scale=0.2, smoothing=True):
         frame = np.load(in_dir+frame_file)
         if smoothing:
             frame = smooth_background(frame)
-        frame = rescale(frame, scale)
-        intensity_spot.append(average_intensity(frame, disks))  
+        frame = rescale(frame, scale, anti_aliasing=True)
+        intensity_spot.append(average_intensity(frame, disks))
         intensity_back.append(average_intensity(frame, background))
         del frame
     
@@ -143,7 +145,7 @@ in_dir = 'D:/Utilisateurs/Emile/Documents/MA2/SensUs/data/20190411_Output_Ada50n
 
 intensity_back, intensity_spot = get_intensities(in_dir, scale=0.1)
 y = (intensity_back - intensity_spot)/(intensity_back+intensity_spot)
-timescale = np.arange(0, y.shape[0]/2, 0.5) 
+timescale = np.arange(0, y.shape[0]/2, 0.5)
 
 plt.plot(timescale, y)
 

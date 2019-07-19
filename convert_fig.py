@@ -5,14 +5,13 @@ Created on Mon Jul  8 10:43:38 2019
 @author: Emile
 """
 import os
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import loadmat
 
 
 def fig_to_bmp(in_dir, out_dir):
     '''
-    Converts all the .fig matlab images in in_dir to NumPy format (.npy) and saves them in out_dir
+    Converts all the .fig matlab images from in_dir to NumPy format (.npy) and saves them in out_dir
     '''
     for filename in os.listdir(in_dir):
         if filename.endswith(".fig"):

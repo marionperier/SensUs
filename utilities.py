@@ -30,20 +30,27 @@ def polyfit2d(x, y, f, deg):
     c = np.linalg.lstsq(vander, f, rcond=None)[0]
     return c.reshape(deg+1)
 
-def smooth_background(img, rescale_factor=0.1, poly_deg=[1,2]):
+def smooth_background(img, rescale_factor=0.1, poly_deg=[2,2]):
     '''
     Smooths the background of the image by modeling the background with a polynomial 
-    surface by regression on the local maximum intensity peaks and 
-    
-    args:
-        img: image as array to smooth background
-        rescale_factor: the scaling of the image to fit the polynomial surface
-        poly_deg: list where the first and secong elements are the polynomial degrees on the x and y axis respectively
-    returns:
-        the input image with smoothed background
-        
+    surface by regression on the local maximum intensity peaks and dividing the original
+    image by this surface.
+
+    Parameters
+    ----------
+    img : ndarray
+        Image.
+    rescale_factor : float or int, optional
+        The scaling of the image used to fit the polynomial surface. The default is 0.1.
+    poly_deg : list or double, optional
+        List where the first and secong elements are the polynomial degrees on the x and y axis respectively. The default is [1,2].
+
+    Returns
+    -------
+    the input image with smoothed background.
+
     '''
-    
+
     imgs = rescale(img, rescale_factor, preserve_range=True)
     BW = peak_local_max(imgs, indices=False)
     k = BW*imgs
@@ -103,17 +110,28 @@ def find_circle(im, scaling_factor=None, gaussian_sigma=8, op_selem=8, cl_selem=
     # diminue la taille de l'image sinon les processing prend trop de temps
     #TODO changer le anti_aliasing_sigma de rescale (cf.skimage doc) (on peut constater de l'aliasing avec la valeur par défaut)
     if scaling_factor:
-        im = rescale(im, scaling_factor)
+        im = rescale(im, scaling_factor, anti_aliasing=True)
+
+    plt.imshow(im)
+    plt.show()
 
 #TODO try to optimize with different filers (median maybe)
     im = gaussian(im, sigma=gaussian_sigma)
+    plt.imshow(im)
+    plt.show()
 #TODO try to optimize with different thresholds
     im = im < threshold_otsu(im)
+    plt.imshow(im)
+    plt.show()
 #TODO try with different opening / closing sizes
-    im = closing(opening(im, selem=disk(op_selem)),selem=disk(cl_selem))
-
+    # im = closing(opening(im, selem=disk(op_selem)),selem=disk(cl_selem))
+    # plt.imshow(im)
+    # plt.show()
 #TODO maybe try another edge detection algorithm (to optimize speed mainly)
     edges = canny(im)
+
+    plt.imshow(edges)
+    plt.show()
 
 #TODO improve circle scope! think to check variability in circle size between different experiments
     if not circle_scope:
@@ -124,11 +142,11 @@ def find_circle(im, scaling_factor=None, gaussian_sigma=8, op_selem=8, cl_selem=
     hough_res = hough_circle(edges, hough_radii)
     #find which circles are the best: the highest the accum, the more the circle fits well to the spot
 #TODO see if we want/can put a condition on accum to select the circles
-#TODO les param min_xdistance et min_ydistance semblent pas marcher => il donne des cercles superposés => il faut régler ce problème
+#TODO les param min_xdistance et min_ydistance semblent pas marcher => il donne des cercles superposés => il faut régler ce problème.
 
     accums, cx, cy, radii = hough_circle_peaks(hough_res, hough_radii,
-                                               min_xdistance=2*circle_scope[0],
-                                               min_ydistance=2*circle_scope[1],
+                                               min_xdistance=100,
+                                               min_ydistance=100,
                                                total_num_peaks=num_circles)
     print(accums, cx, cy, radii)
 
@@ -137,18 +155,27 @@ def find_circle(im, scaling_factor=None, gaussian_sigma=8, op_selem=8, cl_selem=
     
     return cx, cy, radii
 
-def get_disk_coord(im, cx, cy, radii, scaling_factor=None):
-    #resize back to original shape
-    if scaling_factor:
-        cy = cy*int(1/scaling_factor)
-        cx = cx*int(1/scaling_factor)
-        radii = radii*int(1/scaling_factor)
-    
-    disks_coord = []
-    for center_y, center_x, radius in zip(cy, cx, radii):
-        for i in range(im.shape[0]):
-            for j in range(im.shape[1]):
-                # watch out for coordinate changes: x coordinate is the second coordinate in an array
-                if np.linalg.norm([i-center_y, j-center_x]) <= radius:
-                    disks_coord.append([i,j])
-    return np.array(disks_coord)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
